@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sbml xmlns="http://www.sbml.org/sbml/level2" level="2" version="1">
+<model metaid="oscillating_MAPK" id="oscillating_MAPK">
+<listOfUnitDefinitions>
+<unitDefinition id="substance" name="substance">
+<listOfUnits>
+<unit kind="mole"/>
+</listOfUnits>
+</unitDefinition>
+<unitDefinition id="volume" name="volume">
+<listOfUnits>
+<unit kind="litre"/>
+</listOfUnits>
+</unitDefinition>
+<unitDefinition id="area" name="area">
+<listOfUnits>
+<unit kind="metre" exponent="2"/>
+</listOfUnits>
+</unitDefinition>
+<unitDefinition id="length" name="length">
+<listOfUnits>
+<unit kind="metre"/>
+</listOfUnits>
+</unitDefinition>
+<unitDefinition id="time" name="time">
+<listOfUnits>
+<unit kind="second"/>
+</listOfUnits>
+</unitDefinition>
+</listOfUnitDefinitions>
+<listOfCompartments>
+<compartment id="default" size="1" units="volume"/>
+<compartment id="uVol" name="uVol" size="1" units="volume" outside="default">
+</compartment>
+</listOfCompartments>
+<listOfSpecies>
+<species id="MKK" name="MKK" compartment="uVol" initialAmount="280">
+</species>
+<species id="MKKK" name="MKKK" compartment="uVol" initialAmount="90">
+</species>
+<species id="MAPK" name="MAPK" compartment="uVol" initialAmount="280">
+</species>
+<species id="MKKK_P" name="MKKK" compartment="uVol" initialAmount="10">
+</species>
+<species id="MKK_P" name="MKK" compartment="uVol" initialAmount="10">
+</species>
+<species id="MKK_PP" name="MKK" compartment="uVol" initialAmount="10">
+</species>
+<species id="MAPK_P" name="MAPK" compartment="uVol" initialAmount="10">
+</species>
+<species id="MAPK_PP" name="MAPK" compartment="uVol" initialAmount="10">
+</species>
+</listOfSpecies>
+<listOfReactions>
+<reaction id="J0" name="J0" reversible="false">
+<listOfReactants>
+<speciesReference species="MKKK"/>
+</listOfReactants>
+<listOfProducts>
+<speciesReference species="MKKK_P"/>
+</listOfProducts>
+<listOfModifiers>
+<modifierSpeciesReference species="MAPK_PP"/>
+</listOfModifiers>
+<kineticLaw>
+<math xmlns="http://www.w3.org/1998/Math/MathML">
+<apply>
+<divide/>
+<apply>
+<times/>
+<ci> V1 </ci>
+<ci> MKKK </ci>
+</apply>
+<apply>
+<times/>
+<apply>
+<plus/>
+<cn type="integer"> 1 </cn>
+<apply>
+<power/>
+<apply>
+<divide/>
+<ci> MAPK_PP </ci>
+<ci> Ki </ci>
+</apply>
+<ci> n </ci>
+</apply>
+</apply>
+<apply>
+<plus/>
+<ci> K1 </ci>
+<ci> MKKK </ci>
+</apply>
+</apply>
+</apply>
+</math>
+<listOfParameters>
+<parameter id="V1" value="2.5"/>
+<parameter id="Ki" value="9"/>
+<parameter id="n" value="1"/>
+<parameter id="K1" value="10"/>
+</listOfParameters>
+</kineticLaw>
+</reaction>
+<reaction id="J1" name="J1" reversible="false">
+<listOfReactants>
+<speciesReference species="MKKK_P"/>
+</listOfReactants>
+<listOfProducts>
+<speciesReference species="MKKK"/>
+</listOfProducts>
+<kineticLaw>
+<math xmlns="http://www.w3.org/1998/Math/MathML">
+<apply>
+<divide/>
+<apply>
+<times/>
+<ci> V2 </ci>
+<ci> MKKK_P </ci>
+</apply>
+<apply>
+<plus/>
+<ci> KK2 </ci>
+<ci> MKKK_P </ci>
+</apply>
+</apply>
+</math>
+<listOfParameters>
+<parameter id="V2" value="0.25"/>
+<parameter id="KK2" value="8"/>
+</listOfParameters>
+</kineticLaw>
+</reaction>
+<reaction id="J2" name="J2" reversible="false">
+<listOfReactants>
+<speciesReference species="MKK"/>
+</listOfReactants>
+<listOfProducts>
+<speciesReference species="MKK_P"/>
+</listOfProducts>
+<listOfModifiers>
+<modifierSpeciesReference species="MKKK_P"/>
+</listOfModifiers>
+<kineticLaw>
+<math xmlns="http://www.w3.org/1998/Math/MathML">
+<apply>
+<divide/>
+<apply>
+<times/>
+<ci> k3 </ci>
+<ci> MKKK_P </ci>
+<ci> MKK </ci>
+</apply>
+<apply>
+<plus/>
+<ci> KK3 </ci>
+<ci> MKK </ci>
+</apply>
+</apply>
+</math>
+<listOfParameters>
+<parameter id="k3" value="0.025"/>
+<parameter id="KK3" value="15"/>
+</listOfParameters>
+</kineticLaw>
+</reaction>
+<reaction id="J3" name="J3" reversible="false">
+<listOfReactants>
+<speciesReference species="MKK_P"/>
+</listOfReactants>
+<listOfProducts>
+<speciesReference species="MKK_PP"/>
+</listOfProducts>
+<listOfModifiers>
+<modifierSpeciesReference species="MKKK_P"/>
+</listOfModifiers>
+<kineticLaw>
+<math xmlns="http://www.w3.org/1998/Math/MathML">
+<apply>
+<divide/>
+<apply>
+<times/>
+<ci> k4 </ci>
+<ci> MKKK_P </ci>
+<ci> MKK_P </ci>
+</apply>
+<apply>
+<plus/>
+<ci> KK4 </ci>
+<ci> MKK_P </ci>
+</apply>
+</apply>
+</math>
+<listOfParameters>
+<parameter id="k4" value="0.025"/>
+<parameter id="KK4" value="15"/>
+</listOfParameters>
+</kineticLaw>
+</reaction>
+<reaction id="J4" name="J4" reversible="false">
+<listOfReactants>
+<speciesReference species="MKK_PP"/>
+</listOfReactants>
+<listOfProducts>
+<speciesReference species="MKK_P"/>
+</listOfProducts>
+<kineticLaw>
+<math xmlns="http://www.w3.org/1998/Math/MathML">
+<apply>
+<divide/>
+<apply>
+<times/>
+<ci> V5 </ci>
+<ci> MKK_PP </ci>
+</apply>
+<apply>
+<plus/>
+<ci> KK5 </ci>
+<ci> MKK_PP </ci>
+</apply>
+</apply>
+</math>
+<listOfParameters>
+<parameter id="V5" value="0.75"/>
+<parameter id="KK5" value="15"/>
+</listOfParameters>
+</kineticLaw>
+</reaction>
+<reaction id="J5" name="J5" reversible="false">
+<listOfReactants>
+<speciesReference species="MKK_P"/>
+</listOfReactants>
+<listOfProducts>
+<speciesReference species="MKK"/>
+</listOfProducts>
+<kineticLaw>
+<math xmlns="http://www.w3.org/1998/Math/MathML">
+<apply>
+<divide/>
+<apply>
+<times/>
+<ci> V6 </ci>
+<ci> MKK_P </ci>
+</apply>
+<apply>
+<plus/>
+<ci> KK6 </ci>
+<ci> MKK_P </ci>
+</apply>
+</apply>
+</math>
+<listOfParameters>
+<parameter id="V6" value="0.75"/>
+<parameter id="KK6" value="15"/>
+</listOfParameters>
+</kineticLaw>
+</reaction>
+<reaction id="J6" name="J6" reversible="false">
+<listOfReactants>
+<speciesReference species="MAPK"/>
+</listOfReactants>
+<listOfProducts>
+<speciesReference species="MAPK_P"/>
+</listOfProducts>
+<listOfModifiers>
+<modifierSpeciesReference species="MKK_PP"/>
+</listOfModifiers>
+<kineticLaw>
+<math xmlns="http://www.w3.org/1998/Math/MathML">
+<apply>
+<divide/>
+<apply>
+<times/>
+<ci> k7 </ci>
+<ci> MKK_PP </ci>
+<ci> MAPK </ci>
+</apply>
+<apply>
+<plus/>
+<ci> KK7 </ci>
+<ci> MAPK </ci>
+</apply>
+</apply>
+</math>
+<listOfParameters>
+<parameter id="k7" value="0.025"/>
+<parameter id="KK7" value="15"/>
+</listOfParameters>
+</kineticLaw>
+</reaction>
+<reaction id="J7" name="J7" reversible="false">
+<listOfReactants>
+<speciesReference species="MAPK_P"/>
+</listOfReactants>
+<listOfProducts>
+<speciesReference species="MAPK_PP"/>
+</listOfProducts>
+<listOfModifiers>
+<modifierSpeciesReference species="MKK_PP"/>
+</listOfModifiers>
+<kineticLaw>
+<math xmlns="http://www.w3.org/1998/Math/MathML">
+<apply>
+<divide/>
+<apply>
+<times/>
+<ci> k8 </ci>
+<ci> MKK_PP </ci>
+<ci> MAPK_P </ci>
+</apply>
+<apply>
+<plus/>
+<ci> KK8 </ci>
+<ci> MAPK_P </ci>
+</apply>
+</apply>
+</math>
+<listOfParameters>
+<parameter id="k8" value="0.025"/>
+<parameter id="KK8" value="15"/>
+</listOfParameters>
+</kineticLaw>
+</reaction>
+<reaction id="J8" name="J8" reversible="false">
+<listOfReactants>
+<speciesReference species="MAPK_PP"/>
+</listOfReactants>
+<listOfProducts>
+<speciesReference species="MAPK_P"/>
+</listOfProducts>
+<kineticLaw>
+<math xmlns="http://www.w3.org/1998/Math/MathML">
+<apply>
+<divide/>
+<apply>
+<times/>
+<ci> V9 </ci>
+<ci> MAPK_PP </ci>
+</apply>
+<apply>
+<plus/>
+<ci> KK9 </ci>
+<ci> MAPK_PP </ci>
+</apply>
+</apply>
+</math>
+<listOfParameters>
+<parameter id="V9" value="0.5"/>
+<parameter id="KK9" value="15"/>
+</listOfParameters>
+</kineticLaw>
+</reaction>
+<reaction id="J9" name="J9" reversible="false">
+<listOfReactants>
+<speciesReference species="MAPK_P"/>
+</listOfReactants>
+<listOfProducts>
+<speciesReference species="MAPK"/>
+</listOfProducts>
+<kineticLaw>
+<math xmlns="http://www.w3.org/1998/Math/MathML">
+<apply>
+<divide/>
+<apply>
+<times/>
+<ci> V10 </ci>
+<ci> MAPK_P </ci>
+</apply>
+<apply>
+<plus/>
+<ci> KK10 </ci>
+<ci> MAPK_P </ci>
+</apply>
+</apply>
+</math>
+<listOfParameters>
+<parameter id="V10" value="0.5"/>
+<parameter id="KK10" value="15"/>
+</listOfParameters>
+</kineticLaw>
+</reaction>
+</listOfReactions>
+</model>
+</sbml>
