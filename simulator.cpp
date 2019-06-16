@@ -221,9 +221,9 @@ double System::evaluateAstPow(
     throw runtime_error("pow not binary");
   }
 
-  double left = this->evaluateAst(
+  auto left = this->evaluateAst(
       node->getLeftChild(), species, local_parameters);
-  double right = this->evaluateAst(
+  auto right = this->evaluateAst(
       node->getRightChild(), species, local_parameters);
 
   return pow(left, right);
@@ -286,7 +286,7 @@ void Integrator::integrate(
   // initialize species
   auto model = system.getModel();
   auto num_species = model->getNumSpecies();
-  for (int i = 0; i < num_species; i++) {
+  for (auto i = 0; i < num_species; i++) {
     auto s = model->getSpecies(i);
     species[s->getId()] = s->getInitialAmount();
   }
@@ -313,12 +313,12 @@ int main(int argc, char** argv) {
   }
 
   string filepath {argv[1]};
-  double duration = stod(argv[2]);
-  double dt = stod(argv[3]);
+  auto duration = stod(argv[2]);
+  auto dt = stod(argv[3]);
 
   SBMLReader reader;
-  SBMLDocument* doc = reader.readSBMLFromFile(filepath);
-  const Model* model = doc->getModel();
+  auto doc = reader.readSBMLFromFile(filepath);
+  auto model = doc->getModel();
 
   System system(model);
   Stepper stepper;
