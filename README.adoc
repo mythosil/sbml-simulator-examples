@@ -1,0 +1,38 @@
+= sbml-simulator-examples
+
+Example implementation of SBML simulator. +
+Google Summer of Code 2019.
+
+== Usage
+
+=== Build
+
+----
+$ make
+----
+
+=== Run
+
+----
+$ make run/sample1
+# or
+$ make run/mapk
+----
+
+=== Plot
+
+NOTE: Require gnuplot installed.
+
+----
+$ make plot/sample1
+# or
+$ make plot/mapk
+----
+
+=== Lint
+
+NOTE: Require cpplint installed.
+
+----
+$ make lint
+----
