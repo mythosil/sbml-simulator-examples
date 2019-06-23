@@ -1,44 +1,51 @@
+#include <sbml/SBMLTypes.h>
 #include <iostream>
 #include <string>
 #include <map>
 #include <cmath>
-#include <sbml/SBMLTypes.h>
 
-using namespace std;
+LIBSBML_CPP_NAMESPACE_USE
+
+using std::cout;
+using std::endl;
+using std::string;
+using std::map;
+using std::stod;
+using std::runtime_error;
 
 class System {
  private:
   const Model* model;
-  map<string, double> global_parameters;
+  map<string, double> global_params;
 
   double evaluateAst(
       const ASTNode* node,
       const map<string, double>& species,
-      const map<string, double>& local_parameters) const;
+      const map<string, double>& local_params) const;
   double evaluateAstName(
       const string& name,
       const map<string, double>& species,
-      const map<string, double>& local_parameters) const;
+      const map<string, double>& local_params) const;
   double evaluateAstPlus(
       const ASTNode* node,
       const map<string, double>& species,
-      const map<string, double>& local_parameters) const;
+      const map<string, double>& local_params) const;
   double evaluateAstMinus(
       const ASTNode* node,
       const map<string, double>& species,
-      const map<string, double>& local_parameters) const;
+      const map<string, double>& local_params) const;
   double evaluateAstTimes(
       const ASTNode* node,
       const map<string, double>& species,
-      const map<string, double>& local_parameters) const;
+      const map<string, double>& local_params) const;
   double evaluateAstDivide(
       const ASTNode* node,
       const map<string, double>& species,
-      const map<string, double>& local_parameters) const;
+      const map<string, double>& local_params) const;
   double evaluateAstPow(
       const ASTNode* node,
       const map<string, double>& species,
-      const map<string, double>& local_parameters) const;
+      const map<string, double>& local_params) const;
 
  public:
   explicit System(const Model* model);
@@ -50,10 +57,10 @@ class System {
 
 System::System(const Model* model)
     : model {model} {
-  auto num_global_parameters = model->getNumParameters();
-  for (auto i = 0; i < num_global_parameters; i++) {
+  auto num_global_params = model->getNumParameters();
+  for (auto i = 0; i < num_global_params; i++) {
     auto p = this->model->getParameter(i);
-    this->global_parameters[p->getId()] = p->getValue();
+    this->global_params[p->getId()] = p->getValue();
   }
 }
 
@@ -76,16 +83,16 @@ void System::evaluate(
     auto kl = r->getKineticLaw();
 
     // local parameters
-    map<string, double> local_parameters;
-    auto num_local_parameters = kl->getNumParameters();
-    for (auto j = 0; j < num_local_parameters; j++) {
+    map<string, double> local_params;
+    auto num_local_params = kl->getNumParameters();
+    for (auto j = 0; j < num_local_params; j++) {
       auto p = kl->getParameter(j);
-      local_parameters[p->getId()] = p->getValue();
+      local_params[p->getId()] = p->getValue();
     }
 
     // evaluate AST node
     auto math = kl->getMath();
-    auto result = this->evaluateAst(math, species, local_parameters);
+    auto result = this->evaluateAst(math, species, local_params);
 
     // update dxdt (reactants)
     auto num_reactants = r->getNumReactants();
@@ -108,25 +115,25 @@ void System::evaluate(
 double System::evaluateAst(
     const ASTNode* node,
     const map<string, double>& species,
-    const map<string, double>& local_parameters) const {
+    const map<string, double>& local_params) const {
   switch (node->getType()) {
     case AST_NAME:
-      return this->evaluateAstName(node->getName(), species, local_parameters);
+      return this->evaluateAstName(node->getName(), species, local_params);
     case AST_INTEGER:
-      return (double) node->getInteger();
+      return static_cast<double>(node->getInteger());
     case AST_REAL:
       return node->getReal();
     case AST_PLUS:
-      return this->evaluateAstPlus(node, species, local_parameters);
+      return this->evaluateAstPlus(node, species, local_params);
     case AST_MINUS:
-      return this->evaluateAstMinus(node, species, local_parameters);
+      return this->evaluateAstMinus(node, species, local_params);
     case AST_TIMES:
-      return this->evaluateAstTimes(node, species, local_parameters);
+      return this->evaluateAstTimes(node, species, local_params);
     case AST_DIVIDE:
-      return this->evaluateAstDivide(node, species, local_parameters);
+      return this->evaluateAstDivide(node, species, local_params);
     case AST_POWER:
     case AST_FUNCTION_POWER:
-      return this->evaluateAstPow(node, species, local_parameters);
+      return this->evaluateAstPow(node, species, local_params);
     default:
       throw runtime_error("unknown node type");
   }
@@ -135,17 +142,17 @@ double System::evaluateAst(
 double System::evaluateAstName(
     const string& name,
     const map<string, double>& species,
-    const map<string, double>& local_parameters) const {
+    const map<string, double>& local_params) const {
   if (species.find(name) != species.end()) {
     return species.at(name);
   }
 
-  if (local_parameters.find(name) != local_parameters.end()) {
-    return local_parameters.at(name);
+  if (local_params.find(name) != local_params.end()) {
+    return local_params.at(name);
   }
 
-  if (this->global_parameters.find(name) != this->global_parameters.end()) {
-    return this->global_parameters.at(name);
+  if (this->global_params.find(name) != this->global_params.end()) {
+    return this->global_params.at(name);
   }
 
   throw runtime_error("unknown name: " + name);
@@ -154,12 +161,12 @@ double System::evaluateAstName(
 double System::evaluateAstPlus(
     const ASTNode* node,
     const map<string, double>& species,
-    const map<string, double>& local_parameters) const {
+    const map<string, double>& local_params) const {
   auto ret = 0.0;
 
   auto num_children = node->getNumChildren();
   for (auto i = 0; i < num_children; i++) {
-    ret += this->evaluateAst(node->getChild(i), species, local_parameters);
+    ret += this->evaluateAst(node->getChild(i), species, local_params);
   }
 
   return ret;
@@ -168,12 +175,12 @@ double System::evaluateAstPlus(
 double System::evaluateAstMinus(
     const ASTNode* node,
     const map<string, double>& species,
-    const map<string, double>& local_parameters) const {
+    const map<string, double>& local_params) const {
   auto ret = 0.0;
 
   auto num_children = node->getNumChildren();
   for (auto i = 0; i < num_children; i++) {
-    ret -= this->evaluateAst(node->getChild(i), species, local_parameters);
+    ret -= this->evaluateAst(node->getChild(i), species, local_params);
   }
 
   return ret;
@@ -182,12 +189,12 @@ double System::evaluateAstMinus(
 double System::evaluateAstTimes(
     const ASTNode* node,
     const map<string, double>& species,
-    const map<string, double>& local_parameters) const {
+    const map<string, double>& local_params) const {
   auto ret = 1.0;
 
   auto num_children = node->getNumChildren();
   for (auto i = 0; i < num_children; i++) {
-    ret *= this->evaluateAst(node->getChild(i), species, local_parameters);
+    ret *= this->evaluateAst(node->getChild(i), species, local_params);
   }
 
   return ret;
@@ -196,13 +203,12 @@ double System::evaluateAstTimes(
 double System::evaluateAstDivide(
     const ASTNode* node,
     const map<string, double>& species,
-    const map<string, double>& local_parameters) const {
-  auto ret = this->evaluateAst(node->getChild(0), species, local_parameters);
+    const map<string, double>& local_params) const {
+  auto ret = this->evaluateAst(node->getChild(0), species, local_params);
 
   auto num_children = node->getNumChildren();
   for (auto i = 1; i < num_children; i++) {
-    auto denom = this->evaluateAst(
-        node->getChild(i), species, local_parameters);
+    auto denom = this->evaluateAst(node->getChild(i), species, local_params);
     if (denom == 0.0) {
       throw runtime_error("divide by zero");
     }
@@ -215,16 +221,14 @@ double System::evaluateAstDivide(
 double System::evaluateAstPow(
     const ASTNode* node,
     const map<string, double>& species,
-    const map<string, double>& local_parameters) const {
+    const map<string, double>& local_params) const {
   auto num_children = node->getNumChildren();
   if (num_children != 2) {
     throw runtime_error("pow not binary");
   }
 
-  auto left = this->evaluateAst(
-      node->getLeftChild(), species, local_parameters);
-  auto right = this->evaluateAst(
-      node->getRightChild(), species, local_parameters);
+  auto left = this->evaluateAst(node->getLeftChild(), species, local_params);
+  auto right = this->evaluateAst(node->getRightChild(), species, local_params);
 
   return pow(left, right);
 }

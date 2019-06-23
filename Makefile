@@ -9,13 +9,16 @@ run/sample1:
 	@./simulator models/sample1.xml 10.0 0.1 | tee result.sample1.dat
 
 run/mapk:
-	@./simulator models/MAPK.xml 1000.0 0.1 | tee result.mapk.dat
+	@./simulator models/MAPK.xml 4000.0 0.1 | tee result.mapk.dat
 
 plot/sample1:
 	@gnuplot -c gnuplot/sample1.plt
 
 plot/mapk:
 	@gnuplot -c gnuplot/mapk.plt
+
+lint:
+	@cpplint simulator.cpp
 
 .PHONY: clean
 clean:
